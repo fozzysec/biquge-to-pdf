@@ -72,8 +72,6 @@ def get_book(book_url):
         f.write("\\setmainfont{%s}\n" % EN_FONT)
         f.write("\\usepackage{indentfirst}\n")
         f.write("\\usepackage{zhspacing}\n")
-        f.write("\\usepackage{titletoc}\n")
-        f.write("\\titlecontents{chapter}[0em]{\lsstyle\smallskip\\bfseries}{}{\itshape\\bfseries}{\hfill\contentspage}[\medskip]\n")
         f.write("\\zhspacing\n")
         f.write("\\raggedbottom\n")
 
