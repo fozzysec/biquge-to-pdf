@@ -28,8 +28,8 @@ REPLACE_LIST = {
         '_': '\\_',
         '{': '\\{',
         '}': '\\}',
-        '[': '{[',
-        ']': ']}',
+        '[': '【',
+        ']': '】',
         '~': '\\textasciitilde ',
         '\u1680': ' ',
         '\u180e': ' ',
@@ -103,6 +103,7 @@ def get_chapter(session, chapter_id, name, url, retries = 3):
             for char in SPECIAL_CHARS:
                 line = line.replace(char, REPLACE_LIST[char])
             line = re.sub('^\s+', '', line)
+            line = re.sub('[\uff00-\uffff]', '', line)
             if not line:
                 continue
             f.write(line)
