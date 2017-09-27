@@ -102,6 +102,7 @@ def get_chapter(session, chapter_id, name, url, retries = 3):
         for line in content:
             for char in SPECIAL_CHARS:
                 line = line.replace(char, REPLACE_LIST[char])
+            line = re.sub('^\s+', '', line)
             if not line:
                 continue
             f.write(line)
