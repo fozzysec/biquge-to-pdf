@@ -15,6 +15,25 @@ ZH_FONT = 'Hiragino Sans GB'
 EN_FONT = 'Helvetica'
 MAX_RETRY = 3
 TIMEOUT = 30
+SPECIAL_CHARS = '\\#$%&^_{}~[]\ufeff\u3000'
+REPLACE_LIST = {
+        '#': '\\#',
+        '$': '\\$',
+        '%': '\\%',
+        '&': '\\&',
+        '\\': '\\textbackslash ',
+        #'^': '\\textcircumflex ',
+        '^': '',
+        '_': '\\_',
+        '{': '\\{',
+        '}': '\\}',
+        '[': '{[',
+        ']': ']}',
+        '~': '\\textasciitilde ',
+        '\ufeff': '',
+        '\u3000': ''
+        }
+
 
 def get_index(book_url):
     response = requests.get(book_url)
@@ -35,6 +54,8 @@ def get_index(book_url):
         url = chapter.xpath('./@href')[0]
         url = "{}{}".format(site_domain, url)
         name = chapter.xpath('./text()')[0]
+        for char in SPECIAL_CHARS:
+            name = name.replace(char, REPLACE_LIST[char])
         chapter_info = {
                 'name': name,
                 'url': url
@@ -62,7 +83,8 @@ def get_chapter(session, chapter_id, name, url, retries = 3):
         if content:
             content[0] = re.sub('\w+\(\);', '', content[0])
         for line in content:
-            line = re.sub('[&\^\\\[\]\{\}_\$#@\?\ufeff]', '', line)
+            for char in SPECIAL_CHARS:
+                line = line.replace(char, REPLACE_LIST[char])
             if not line:
                 continue
             f.write(line)
