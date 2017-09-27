@@ -41,6 +41,8 @@ def get_index(book_url):
 
 def get_chapter(session, chapter_id, name, url, retries = 3):
     if(retries <= 0):
+        with open("{}/{}.tex".format(CHAPTERS_DIR, chapter_id), 'w', encoding='utf8') as f:
+            f.write("\\chapter{%s}\n" % name)
         return
     print("Fetching chapter {}: {}".format(chapter_id, name))
     response = session.get(url, timeout=TIMEOUT)
@@ -48,7 +50,7 @@ def get_chapter(session, chapter_id, name, url, retries = 3):
     doc = lxml.html.fromstring(response.text)
     content = doc.xpath('//div[@id="content"]/text()')
     if not content:
-        print("Retrying {} on fetching chapter {}".format(retires, name))
+        print("Retrying {} on fetching chapter {}".format(retries, name))
         get_chapter(session, chapter_id, name, url, retries-1)
         return
     with open("{}/{}.tex".format(CHAPTERS_DIR, chapter_id), 'w', encoding='utf8') as f:
@@ -56,7 +58,7 @@ def get_chapter(session, chapter_id, name, url, retries = 3):
         if content:
             content[0] = re.sub('\w+\(\);', '', content[0])
         for line in content:
-            line = re.sub('[\^\\\[\]\{\}_\$#@\?\ufeff]', '', line)
+            line = re.sub('[&\^\\\[\]\{\}_\$#@\?\ufeff]', '', line)
             if not line:
                 continue
             f.write(line)
@@ -76,9 +78,10 @@ def get_book(book_url):
         f.write("\\newfontfamily\zhfont{%s}\n" % ZH_FONT)
         f.write("\\newfontfamily\zhpunctfont{%s}\n" % ZH_FONT)
         f.write("\\setmainfont{%s}\n" % EN_FONT)
-        f.write("\\usepackage{indentfirst}\n")
         f.write("\\usepackage{zhspacing}\n")
         f.write("\\zhspacing\n")
+        f.write("\\usepackage{hyperref}\n")
+        f.write("\\hypersetup{linktoc=all}\n")
         f.write("\\raggedbottom\n")
 
         f.write("\\title{%s}\n" % book_meta['name'])
