@@ -7,6 +7,10 @@ from urllib.parse import urlparse
 from requests.adapters import HTTPAdapter
 
 CHAPTERS_DIR = 'chapters'
+TEMPLATE_DIR = 'template'
+HEADER_FILE = 'header.tex'
+FONT_TEMPLATE = 'fontssetting_template.tex'
+FONT_FILE = 'fontssetting.tex'
 ZH_FONT = 'Hiragino Sans GB'
 EN_FONT = 'Helvetica'
 MAX_RETRY = 3
@@ -68,22 +72,15 @@ def get_book(book_url):
     session = requests.Session()
     session.mount("http://", HTTPAdapter(max_retries=MAX_RETRY))
     book_meta = get_index(book_url)
-    with open("{}.tex".format(book_meta['name']), 'w', encoding='utf8') as f:
-        f.write("\\documentclass[11pt,a4paper]{book}\n")
-        f.write("\\XeTeXlinebreaklocale \"zh\"\n")
-        f.write("\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt\n")
-        f.write("\\usepackage[top=1in,bottom=1in,left=1.25in,right=1.25in]{geometry}\n")
-        f.write("\\usepackage{float}\n")
-        f.write("\\usepackage{fontspec}\n")
-        f.write("\\newfontfamily\zhfont{%s}\n" % ZH_FONT)
-        f.write("\\newfontfamily\zhpunctfont{%s}\n" % ZH_FONT)
-        f.write("\\setmainfont{%s}\n" % EN_FONT)
-        f.write("\\usepackage{zhspacing}\n")
-        f.write("\\zhspacing\n")
-        f.write("\\usepackage{hyperref}\n")
-        f.write("\\hypersetup{linktoc=all}\n")
-        f.write("\\raggedbottom\n")
+    with open("{}/{}".format(TEMPLATE_DIR, FONT_TEMPLATE), 'r') as template, open("{}/{}".format(TEMPLATE_DIR, FONT_FILE), 'w', encoding='utf8') as f:
+        for line in template:
+            line = re.sub('#zhfont#', ZH_FONT, line)
+            line = re.sub('#enfont#', EN_FONT, line)
+            f.write(line)
 
+    with open("{}.tex".format(book_meta['name']), 'w', encoding='utf8') as f:
+
+        f.write("\\input{%s/%s}\n" % (TEMPLATE_DIR, HEADER_FILE))
         f.write("\\title{%s}\n" % book_meta['name'])
         f.write("\\author{%s}\n" % book_meta['author'])
         f.write("\\begin{document}\n")
