@@ -1,4 +1,5 @@
 .DS_Store
+!template/*
 template/fontssetting.tex
 *.tex
 *.pdf
