@@ -5,5 +5,7 @@
 *.aux
 *.toc
 *.out
+*.fls
+*.fdb_latexmk
 !template/*
 template/fontssetting.tex
