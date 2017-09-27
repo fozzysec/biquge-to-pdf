@@ -1,1 +1,8 @@
 .DS_Store
+template/fontssetting.tex
+*.tex
+*.pdf
+*.log
+*.aux
+*.toc
+*.out
