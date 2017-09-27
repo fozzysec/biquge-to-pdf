@@ -39,18 +39,24 @@ def get_index(book_url):
     book_meta['chapters'] = chapters
     return book_meta
 
-def get_chapter(session, chapter_id, name, url):
+def get_chapter(session, chapter_id, name, url, retries = 3):
+    if(retries <= 0):
+        return
     print("Fetching chapter {}: {}".format(chapter_id, name))
+    response = session.get(url, timeout=TIMEOUT)
+    response.encoding = 'utf8'
+    doc = lxml.html.fromstring(response.text)
+    content = doc.xpath('//div[@id="content"]/text()')
+    if not content:
+        print("Retrying {} on fetching chapter {}".format(retires, name))
+        get_chapter(session, chapter_id, name, url, retries-1)
+        return
     with open("{}/{}.tex".format(CHAPTERS_DIR, chapter_id), 'w', encoding='utf8') as f:
-        response = session.get(url, timeout=TIMEOUT)
-        response.encoding = 'utf8'
-        doc = lxml.html.fromstring(response.text)
         f.write("\\chapter{%s}\n" % name)
-        content = doc.xpath('//div[@id="content"]/text()')
         if content:
             content[0] = re.sub('\w+\(\);', '', content[0])
         for line in content:
-            line = re.sub('[&^\\\[\]\{\}_\$#@\?\ufeff]', '', line)
+            line = re.sub('[\^\\\[\]\{\}_\$#@\?\ufeff]', '', line)
             if not line:
                 continue
             f.write(line)
