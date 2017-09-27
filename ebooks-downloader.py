@@ -15,13 +15,14 @@ ZH_FONT = 'Hiragino Sans GB'
 EN_FONT = 'Helvetica'
 MAX_RETRY = 3
 TIMEOUT = 30
-SPECIAL_CHARS = '\\#$%&^_{}~[]\ufeff\u3000'
+SPECIAL_CHARS = '\\#$%&^_{}~[]\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u202f\u205f\ufeff\u3000'
 REPLACE_LIST = {
         '#': '\\#',
         '$': '\\$',
         '%': '\\%',
         '&': '\\&',
         '\\': '\\textbackslash ',
+        #skip xelatex package fontspec EU1 encoding bug
         #'^': '\\textcircumflex ',
         '^': '',
         '_': '\\_',
@@ -30,8 +31,24 @@ REPLACE_LIST = {
         '[': '{[',
         ']': ']}',
         '~': '\\textasciitilde ',
-        '\ufeff': '',
-        '\u3000': ''
+        '\u1680': ' ',
+        '\u180e': ' ',
+        '\u2000': ' ',
+        '\u2001': ' ',
+        '\u2002': ' ',
+        '\u2003': ' ',
+        '\u2004': ' ',
+        '\u2005': ' ',
+        '\u2006': ' ',
+        '\u2007': ' ',
+        '\u2008': ' ',
+        '\u2009': ' ',
+        '\u200a': ' ',
+        '\u200b': ' ',
+        '\u202f': ' ',
+        '\u205f': ' ',
+        '\u3000': ' ',
+        '\ufeff': ' '
         }
 
 
