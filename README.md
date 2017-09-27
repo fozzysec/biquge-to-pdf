@@ -10,5 +10,5 @@ python3 ebooks-downloader.py http://www.xxbiquge.com/4_4429/
 ## 使用xelatex编译tex文件为pdf文件
 
 ```
-xelatex xxx.tex
+latexmk -xelatex xxx.tex
 ```
