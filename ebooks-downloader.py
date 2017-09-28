@@ -82,20 +82,24 @@ def get_index(book_url):
     book_meta['chapters'] = chapters
     return book_meta
 
-def get_chapter(session, chapter_id, name, url, retries = 3):
+def get_chapter(session, chapter_id, name, url, retries = MAX_RETRY):
     if(retries <= 0):
         with open("{}/{}.tex".format(CHAPTERS_DIR, chapter_id), 'w', encoding='utf8') as f:
             f.write("\\chapter{%s}\n" % name)
         return
     print("Fetching chapter {}: {}".format(chapter_id, name))
-    response = session.get(url, timeout=TIMEOUT)
-    response.encoding = 'utf8'
+    try:
+        response = session.get(url, timeout=TIMEOUT)
+        response.encoding = 'utf8'
+    except:
+        print("Retrying {} on fetching chapter {}".format(retries, name))
+        return get_chapter(session, chapter_id, name, url, retries-1)
+
     doc = lxml.html.fromstring(response.text)
     content = doc.xpath('//div[@id="content"]/text()')
     if not content:
         print("Retrying {} on fetching chapter {}".format(retries, name))
-        get_chapter(session, chapter_id, name, url, retries-1)
-        return
+        return get_chapter(session, chapter_id, name, url, retries-1)
     with open("{}/{}.tex".format(CHAPTERS_DIR, chapter_id), 'w', encoding='utf8') as f:
         f.write("\\chapter{%s}\n" % name)
         if content:
