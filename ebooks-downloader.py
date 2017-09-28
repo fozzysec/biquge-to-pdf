@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+from gevent import monkey
+monkey.patch_all()
 import re
 import lxml.html
 import requests
 import sys
 from urllib.parse import urlparse
 from requests.adapters import HTTPAdapter
+from concurrent.futures import ThreadPoolExecutor
 
 CHAPTERS_DIR = 'chapters'
 TEMPLATE_DIR = 'template'
@@ -16,6 +19,8 @@ EN_MAIN_FONT = 'Times New Roman'
 EN_SANS_FONT = 'Helvetica'
 MAX_RETRY = 3
 TIMEOUT = 30
+THREADS = 5
+
 SPECIAL_CHARS = '\\#$%&^_{}~[]\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u202f\u205f\ufeff\u3000'
 REPLACE_LIST = {
         '#': '\\#',
@@ -133,10 +138,12 @@ def get_book(book_url):
         f.write("\\begin{document}\n")
         f.write("\\maketitle\n")
         f.write("\\tableofcontents\n")
+        get_chapter_pool = ThreadPoolExecutor(max_workers=THREADS)
         for i in range(len(book_meta['chapters'])):
             chapter = book_meta['chapters'][i]
-            get_chapter(session, i+1, chapter['name'], chapter['url'])
+            get_chapter_pool.submit(get_chapter, session, i+1, chapter['name'], chapter['url'])
             f.write("\\input{%s/%d.tex}\n" %(CHAPTERS_DIR, i+1))
         f.write("\\end{document}\n")
+        get_chapter_pool.shutdown()
 
 get_book(sys.argv[1])
