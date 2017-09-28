@@ -60,7 +60,10 @@ REPLACE_LIST = {
 
 def get_index(book_url):
     response = requests.get(book_url)
-    response.encoding='utf8'
+
+    #fallback from non-gbk encoding to utf8
+    if(response.encoding != 'gbk'):
+        response.encoding = 'utf8'
     doc = lxml.html.fromstring(response.text)
 
     site_domain = urlparse(book_url).netloc
@@ -72,7 +75,8 @@ def get_index(book_url):
     book_meta['author'] = author
 
     chapters = []
-    chapter_list = doc.xpath('//div[@id="list"]/dl/dd/a')
+    #match different kind of websites
+    chapter_list = doc.xpath('//div[@id="list" or @class="listmain"]/dl/dd/a')
     for chapter in chapter_list:
         url = chapter.xpath('./@href')[0]
         url = "{}{}".format(site_domain, url)
@@ -95,11 +99,13 @@ def get_chapter(session, chapter_id, name, url, retries = MAX_RETRY):
     print("Fetching chapter {}: {}".format(chapter_id, name))
     try:
         response = session.get(url, timeout=TIMEOUT)
-        response.encoding = 'utf8'
     except:
         print("Retrying {} on fetching chapter {}".format(retries, name))
         return get_chapter(session, chapter_id, name, url, retries-1)
 
+    #fallback from non-gbk encoding to utf8
+    if(response.encoding != 'gbk'):
+        response.encoding = 'utf8'
     doc = lxml.html.fromstring(response.text)
     content = doc.xpath('//div[@id="content"]/text()')
     if not content:
