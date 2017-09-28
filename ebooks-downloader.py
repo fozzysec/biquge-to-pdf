@@ -11,8 +11,9 @@ TEMPLATE_DIR = 'template'
 HEADER_FILE = 'header.tex'
 FONT_TEMPLATE = 'fontssetting_template.tex'
 FONT_FILE = 'fontssetting.tex'
-ZH_FONT = 'Hiragino Sans GB'
-EN_FONT = 'Helvetica'
+ZH_FONT = 'PingFang SC'
+EN_MAIN_FONT = 'Times New Roman'
+EN_SANS_FONT = 'Helvetica'
 MAX_RETRY = 3
 TIMEOUT = 30
 SPECIAL_CHARS = '\\#$%&^_{}~[]\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u202f\u205f\ufeff\u3000'
@@ -116,7 +117,8 @@ def get_book(book_url):
     with open("{}/{}".format(TEMPLATE_DIR, FONT_TEMPLATE), 'r') as template, open("{}/{}".format(TEMPLATE_DIR, FONT_FILE), 'w', encoding='utf8') as f:
         for line in template:
             line = re.sub('#zhfont#', ZH_FONT, line)
-            line = re.sub('#enfont#', EN_FONT, line)
+            line = re.sub('#enmainfont#', EN_MAIN_FONT, line)
+            line = re.sub('#ensansfont#', EN_SANS_FONT, line)
             f.write(line)
 
     with open("{}.tex".format(book_meta['name']), 'w', encoding='utf8') as f:
