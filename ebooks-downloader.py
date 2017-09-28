@@ -81,8 +81,6 @@ def get_index(book_url):
         url = chapter.xpath('./@href')[0]
         url = "{}{}".format(site_domain, url)
         name = chapter.xpath('./text()')[0]
-        for char in SPECIAL_CHARS:
-            name = name.replace(char, REPLACE_LIST[char])
         chapter_info = {
                 'name': name,
                 'url': url
@@ -112,6 +110,8 @@ def get_chapter(session, chapter_id, name, url, retries = MAX_RETRY):
         print("Retrying {} on fetching chapter {}".format(retries, name))
         return get_chapter(session, chapter_id, name, url, retries-1)
     with open("{}/{}.tex".format(CHAPTERS_DIR, chapter_id), 'w', encoding='utf8') as f:
+        for char in SPECIAL_CHARS:
+            name = name.replace(char, REPLACE_LIST[char])
         f.write("\\chapter{%s}\n" % name)
         if content:
             content[0] = re.sub('\w+\(\);', '', content[0])
