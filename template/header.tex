@@ -1,4 +1,4 @@
-\documentclass[10pt]{scrbook}
+\documentclass[11pt]{scrbook}
 \XeTeXlinebreaklocale "zh"
 \XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
 \usepackage[a4paper, top=1in, bottom=1in, left=1in, right=1in]{geometry}
@@ -11,6 +11,9 @@
 \zhspacing
 \usepackage[unicode]{hyperref}
 \hypersetup{linktoc=all}
+\usepackage{datetime}
+\newdateformat{monthyeardate}{\monthname{\THEMONTH}, \THEYEAR}
 \raggedbottom
 \RedeclareSectionCommands[tocnumwidth=3em]{chapter}
 \date{}
+%\date{\monthyeardate\today}
